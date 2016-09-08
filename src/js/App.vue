@@ -29,6 +29,7 @@
 <script lang="babel">
 import * as Lib from 'platform/plain'
 import ViewBasic from "views/mixins/view-basic"
+import api from 'api/context'
 export default {
   name: 'app-view',
   mixins: [ViewBasic],
@@ -49,11 +50,11 @@ export default {
         this.logoutLocal()
         current ? redirect('/timeout') : redirect('/login')
       }
-      this.apiGet('/account/loginStatus', {}, success, failure)
+      api.loginStatus(success, failure)
     },
     logout() {
       this.logoutLocal()
-      this.apiPost('/logout', {}, ((v) => true), ((e)=> false))
+      api.logout()
       this.$router.push('/login')
     },
     logoutLocal() {

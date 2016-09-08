@@ -15,9 +15,7 @@ import ViewBasic from 'views/mixins/view-basic'
  * - Props -
  * initialSearch: 初回検索を行うか(未指定時はtrue)
  * paging: ページング検索を行うか(未指定時はfalse)
- * path: 検索APIパス(必須: 標準でapiUrlへ渡されるパス)
- * actionSuccessKey: 処理成功時に $emit されるイベントキー
- * - Data -
+  * - Data -
  * items: 検索結果一覧
  * page: ページング情報
  * updating: 処理中の時はtrue
@@ -25,7 +23,7 @@ import ViewBasic from 'views/mixins/view-basic'
  * search: 検索する
  * next: ページング時に次ページを呼び出してitemsへ追加する
  * searchData: 検索条件をハッシュで生成する
- * searchPath: 検索時の呼び出し先URLパスを生成する(apiUrlへ渡されるパス)
+ * searchAction: 検索処理 (必須)
  */
 export default {
   data() {
@@ -40,9 +38,6 @@ export default {
   props: {
     initialSearch: {type: Boolean, default: true},
     paging: {type: Boolean, default: false},
-    path: {type: String, required: true},
-    // 検索完了後に emit されるイベントキー
-    actionSuccessKey: {type: String, default: Action.SearchSuccess}
   },
   created() {
     this.clear()
@@ -56,8 +51,11 @@ export default {
     },
     // 検索処理を行います
     // 検索時の接続URLはsearchPath、検索条件はsearchDataに依存します。
-    // 検索成功時の後処理はlayoutSearchを実装する事で差し込み可能です。
     search() { this.renderSearch() },
+    searchData() { return {} },
+    searchAction(param, success, failure) {
+      Lib.Log.error('利用先でメソッドを実装してください [searchAction]')
+    },
     // 次ページの検索を行います。
     // 検索結果は一覧にそのまま追加されます。
     // ※タイミングによっては重複レコードが発生しますが、現時点ではそれらを取り除く処理は実装していません。
@@ -72,13 +70,8 @@ export default {
       this.clearMessage()
       Vue.set(this, 'items', [])
     },
-    // 検索条件となるハッシュ情報を返します。
-    searchData() { /* 利用先で設定してください */ return {} },
-    // 検索時のURLパスを返します。ここで返すURLパスはapiUrlの引数に設定されます。
-    searchPath() { return this.path },
     // 検索を行います。appendがfalseのときは常に一覧を初期化します。
     renderSearch(append = false) {
-      Lib.Log.debug(`- search url: ${this.apiUrl(this.searchPath())}`)
       let param = this.searchData()
       if (0 < Object.keys(param).length) Lib.Log.debug(param)
       if (append === false) {
@@ -92,13 +85,12 @@ export default {
       let success = (data) => {
         this.updating = false
         this.renderList(data, append)
-        EventEmitter.$emit(this.actionSuccessKey, data)
       }
       let failure = (error) => {
         this.updating = false
         this.apiFailure(error)
       }
-      this.apiGet(this.searchPath(), param, success, failure)
+      this.searchAction(param, success, failure)
     },
     // 検索結果をitemsへ格納します。
     // itemsがv-for等で画面要素と紐づいていた時は画面側にも内容が反映されます。

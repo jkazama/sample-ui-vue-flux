@@ -22,10 +22,13 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
+import { mapActions } from 'vuex'
+
 // Application Initialize
 import App from 'App.vue'
 new Vue({
   router,
+  store,
   template: '<App ref="app" />',
   components: {
     'App': App

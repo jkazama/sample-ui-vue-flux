@@ -30,44 +30,46 @@ div
   div(v-if="!global")
     div(:class="{'input-group': message, 'l-message-group': message}")
       slot
-      .l-message-group-item.text-danger(v-text="message" v-if="message")
+      .l-message-group-item(:class="[classText]" v-text="message" v-if="message")
 </template>
 
 <script lang="babel">
-import {Level, Event} from 'constants'
+import {Level} from 'constants'
+import {UPDATE_MESSAGE_GLOBAL, UPDATE_MESSAGE_COLUMNS} from 'store/mutation-types'
 export default {
   name: 'message',
   data() {
     return {
       classAlert: null,
-      classText: null,
-      message: null
+      classText: null
     }
   },
   props: {
-    // グローバル例外表示フラグ
+    // グローバルレイアウト表示フラグ
     global: {type: Boolean, default: false},
-    // フィールド例外表示キー (グローバル例外表示フラグが false 時に有効)
+    // フィールド表示キー (グローバル例外表示フラグが false 時に有効)
     field: {type: String}
   },
-  created() {
-    EventEmitter.$on(Event.Messages, (v) => this.handleMessages(v))
+  computed: {
+    message() {
+      if (this.global) {
+        return this.globalMessage(this.$store.state.context.message.global)
+      } else {
+        return this.columnMessage(this.$store.state.context.message.columns)
+      }
+    }
   },
   methods: {
-    handleMessages(messages) {
-      this.global ? this.handleGlobalMessage(messages) : this.handleColumnMessage(messages)
-    },
-    handleGlobalMessage(messages) {
-      let message = messages.global
-      this.message = message
-      if (message) {
-        let type = this.messageType(messages.level)
+    globalMessage(msg) {
+      if (msg) {
+        let type = this.messageType(msg.level)
         this.classAlert = `alert-${type}`
         this.classText = `text-${type}`
       } else {
         this.classAlert = null
         this.classText = null
       }
+      return msg ? msg.message : null
     },
     messageType(level) {
       switch (level) {
@@ -81,16 +83,16 @@ export default {
           return "default"
       }
     },
-    handleColumnMessage(messages) {
-      this.message = this.columnError(messages)
-    },
-    columnError(messages) {
-      if (messages && messages.columns && 0 < messages.columns.length) {
-        let err = Array.from(messages.columns).find((err) =>
-          (messages.level === Level.WARN || messages.level === Level.ERROR) && err.key === this.field)
-        if (err) return err.values[0]
+    columnMessage(columns) {
+      if (columns && 0 < columns.length) {
+        let column = Array.from(columns).find((v) => v.key === this.field)
+        let type = this.messageType(column.level)
+        this.classText = `text-${type}`
+        return column ? column.messages[0] : null
+      } else {
+        this.classText = null
+        return null
       }
-      return null
     }
   }
 }

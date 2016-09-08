@@ -14,11 +14,10 @@
 
 <script lang="babel">
 import ViewCrud from "views/mixins/view-crud"
+import api from 'api/asset'
+import * as types from 'store/mutation-types'
 export default {
   mixins: [ViewCrud],
-  props: {
-    path: {default: "/asset/cio/withdraw"}
-  },
   data() {
     return {
       item: {
@@ -27,10 +26,16 @@ export default {
     }
   },
   methods: {
-    actionSuccessMessage() { return "依頼を受け付けました" },
     registerData() {
       this.item.currency = "JPY"
       return this.item
+    },
+    registerAction(param, success, failure) {
+      api.withdraw(param, (v) => {
+        this.commitStore(types.UPDATE_ASSET)
+        this.clear() // 入力情報の初期化
+        success(v, '依頼を受け付けました')
+      }, failure)
     }
   }
 }

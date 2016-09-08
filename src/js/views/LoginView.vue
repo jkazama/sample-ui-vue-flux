@@ -18,6 +18,7 @@
 import {Level} from "constants"
 import * as Lib from "platform/plain"
 import ViewBasic from "views/mixins/view-basic"
+import api from "api/context"
 export default {
   name: 'login-view',
   mixins: [ViewBasic],
@@ -47,11 +48,11 @@ export default {
             this.messageError("要求処理に失敗しました")
         }
       }
-      this.apiPost("/login", {loginId: this.loginId, password: this.password}, success, failure)
+      api.login({loginId: this.loginId, password: this.password}, success, failure)
     },
     forward() {
-      this.apiGet("/account/loginAccount", {}, (v) => {
-        this.loginSession(v)
+      api.loginAccount(v => {
+        this.loginSession(v) //low: store へ持っていく
         this.$router.push("/")
       })
     }    
