@@ -14,10 +14,9 @@
 
 <script lang="babel">
 import ViewCrud from "views/mixins/view-crud"
-import api from 'api/asset'
-import * as types from 'store/mutation-types'
+import ActionsAsset from "actions/mixins/asset"
 export default {
-  mixins: [ViewCrud],
+  mixins: [ViewCrud, ActionsAsset],
   data() {
     return {
       item: {
@@ -30,9 +29,8 @@ export default {
       this.item.currency = "JPY"
       return this.item
     },
-    registerAction(param, success, failure) {
-      api.withdraw(param, (v) => {
-        this.commitStore(types.UPDATE_ASSET)
+    action(param, success, failure) {
+      this.withdraw(param, (v) => {
         this.clear() // 入力情報の初期化
         success(v, '依頼を受け付けました')
       }, failure)

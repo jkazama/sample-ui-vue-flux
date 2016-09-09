@@ -9,9 +9,6 @@ import store from './store'
 import router from './router'
 import { sync } from 'vuex-router-sync'
 
-// Register Global Event
-window.EventEmitter = new Vue()
-
 // sync the router with the vuex store.
 // this registers `store.state.route`
 sync(store, router)
@@ -21,8 +18,6 @@ import * as filters from './filters'
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-
-import { mapActions } from 'vuex'
 
 // Application Initialize
 import App from 'App.vue'

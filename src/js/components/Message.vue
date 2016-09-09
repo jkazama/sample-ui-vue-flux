@@ -35,7 +35,6 @@ div
 
 <script lang="babel">
 import {Level} from 'constants'
-import {UPDATE_MESSAGE_GLOBAL, UPDATE_MESSAGE_COLUMNS} from 'store/mutation-types'
 export default {
   name: 'message',
   data() {

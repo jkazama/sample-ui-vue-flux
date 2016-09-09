@@ -10,7 +10,8 @@
       ul.nav.navbar-nav.navbar-right
         li.dropdown
           a.dropdown-toggle(href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false")
-            | ○○ 様 
+            span(v-text="user.name")
+            |  様 
             span.caret
           ul.dropdown-menu(role="menu")
             li: a(href="#")
@@ -29,13 +30,17 @@
 <script lang="babel">
 import * as Lib from 'platform/plain'
 import ViewBasic from "views/mixins/view-basic"
-import api from 'api/context'
 export default {
   name: 'app-view',
   mixins: [ViewBasic],
   data() {
     return {
       logined: false
+    }
+  },
+  computed: {
+    user() {
+      return this.sessionValue() 
     }
   },
   methods: {
@@ -50,11 +55,11 @@ export default {
         this.logoutLocal()
         current ? redirect('/timeout') : redirect('/login')
       }
-      api.loginStatus(success, failure)
+      this.loginStatus(success, failure)
     },
     logout() {
       this.logoutLocal()
-      api.logout()
+      this.doLogout()
       this.$router.push('/login')
     },
     logoutLocal() {

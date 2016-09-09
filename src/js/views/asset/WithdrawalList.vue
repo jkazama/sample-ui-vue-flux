@@ -18,20 +18,15 @@
 
 <script lang="babel">
 import ViewList from "views/mixins/view-list"
-import * as types from 'store/mutation-types'
-import api from 'api/asset'
+import ActionsAsset from "actions/mixins/asset"
 export default {
-  mixins: [ViewList],
+  mixins: [ViewList, ActionsAsset],
   mounted() {
-    this.$store.subscribe(mutation => {
-      if (mutation.type === types.UPDATE_ASSET) {
-        this.search()
-      }
-    })
+    this.onRefreshAsset(mutation => this.search())
   },
   methods: {
-    searchAction(data, success, failure) {
-      api.findUnprocessedOut(data, success, failure)
+    action(data, success, failure) {
+      this.findUnprocessedOut(data, success, failure)
     }
   }
 }

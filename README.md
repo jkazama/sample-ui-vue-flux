@@ -73,6 +73,10 @@ sample-ui-vue-flux
 - プロジェクト固有の JS は Webpack を利用して生成する
     - グローバルスコープの汚染を許容せずにコンポーネントベースで開発する
 - Vue.js の実装アプローチは [vue-hackernews-2.0](https://github.com/vuejs/vue-hackernews-2.0) を参考に
+- Flux 関連は Vuex の[リファレンス](http://vuex.vuejs.org/ja/index.html) 記載事項をなるべく尊重
+    - Actions の管理がどうしても煩雑に思えたので Vue.js の Mixin を利用して同概念を代用
+    - Store の管理対象はコンポーネント間で横断的に利用される情報のみとし、全てをその管理下にはおかない
+        - 入力情報やトランザクション系の揮発性高い参照情報とかは入れない
 
 #### ディレクトリ構成
 
@@ -93,9 +97,12 @@ src
   css                                … CSS テンプレートファイル ( SCSS )
   html                               … HTML テンプレートファイル ( Pug )
   js
+    actions
+      api                            … API処理 (Vue.js 非依存)
+      mixins                         … Flux アクションをサポートする Vue Mixin
     components                       … SPA で利用されるコンポーネント
     filters                          … フィルタ関数
-    platform                         … プロジェクト内JSライブラリ
+    platform                         … プロジェクト内JSライブラリ (Vue.js 非依存)
     router                           … SPA ルーティング定義
     views                            … 画面コンポーネント
     - app.js                         … SPA における Entry ファイル

@@ -1,14 +1,15 @@
 import Param from 'variables'
-import {Level, Event, Action, Style} from 'constants'
+import {Level} from 'constants'
 import * as Lib from "platform/plain"
 import Vue from "vue"
-import * as types from 'store/mutation-types'
 
 import Message from "components/Message.vue"
 import CommandButton from "components/CommandButton.vue"
 import InputText from "components/InputText.vue"
 import ListGroup from "components/ListGroup.vue"
 import Modal from "components/Modal.vue"
+
+import ActionsContext from "actions/mixins/context"
 
 /**
  * View コンポーネントのベーシックな Mixin。
@@ -28,6 +29,7 @@ export default {
   data() {
     return {}
   },
+  mixins: [ActionsContext],
   components: {
     Message, CommandButton, InputText, ListGroup, Modal
   },
@@ -35,16 +37,6 @@ export default {
     this.clear()
   },
   methods: {
-    // メッセージを通知します。
-    message(globalMessage = null, columns = [], level = Level.INFO) {
-      if (globalMessage) Lib.Log.debug(globalMessage)
-      this.$store.commit(types.UPDATE_MESSAGE_GLOBAL, {message: globalMessage, level: level})
-      this.$store.commit(types.UPDATE_MESSAGE_COLUMNS, columns)
-    },
-    // エラーメッセージを通知します。
-    messageError(globalMessage, columnMessages = [], level = Level.ERROR) {
-      this.message(globalMessage, columnMessages, level)
-    },
     // グローバルエラー及び/コントロールエラーを初期化します
     clear() {
       this.clearMessage()
@@ -128,12 +120,10 @@ export default {
     // ハッシュ情報をログインセッションへ紐付けします
     loginSession(sessionHash) {
       Lib.Session.login(sessionHash)
-      EventEmitter.$emit(Event.Login, {})
     },
     // ログインセッション情報を破棄します
     logoutSession() {
       Lib.Session.logout()
-      EventEmitter.$emit(Event.Logout, {})
     },
     // ログイン状態の時はtrue
     isLogin() { return Lib.Session.hasSession() },

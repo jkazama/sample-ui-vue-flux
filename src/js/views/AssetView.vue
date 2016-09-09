@@ -42,7 +42,6 @@
 </template>
 
 <script lang="babel">
-import {Action, Level} from 'constants'
 import ViewBasic from "views/mixins/view-basic"
 import WithdrawalCrud from "views/asset/WithdrawalCrud.vue"
 import WithdrawalList from "views/asset/WithdrawalList.vue"

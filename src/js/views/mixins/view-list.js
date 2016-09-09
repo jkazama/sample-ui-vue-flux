@@ -1,5 +1,5 @@
 import Param from 'variables'
-import {Level, Action} from 'constants'
+import {Level} from 'constants'
 import * as Lib from 'platform/plain'
 import Vue from 'vue'
 
@@ -10,7 +10,7 @@ import ViewBasic from 'views/mixins/view-basic'
  * 一覧パネル等で利用してください。ページング検索(自動ロード方式)もサポートしています。
  * (API側でPagingListを返す必要があります)
  * 本クラスを利用する際は初期化時に以下の設定が必要です。
- * ・path属性の定義
+ * ・actionの実装
  * ---
  * - Props -
  * initialSearch: 初回検索を行うか(未指定時はtrue)
@@ -20,10 +20,10 @@ import ViewBasic from 'views/mixins/view-basic'
  * page: ページング情報
  * updating: 処理中の時はtrue
  * - 標準API -
- * search: 検索する
- * next: ページング時に次ページを呼び出してitemsへ追加する
- * searchData: 検索条件をハッシュで生成する
- * searchAction: 検索処理 (必須)
+ * search: 検索します。
+ * next: ページング時に次ページを呼び出してitemsへ追加します。
+ * searchData: 検索条件をハッシュで生成します。
+ * action: 実際の検索アクションを実装してください。 (必須)
  */
 export default {
   data() {
@@ -50,11 +50,11 @@ export default {
       if (this.initialSearch) this.search()
     },
     // 検索処理を行います
-    // 検索時の接続URLはsearchPath、検索条件はsearchDataに依存します。
+    // 検索時の処理はaction、検索条件はsearchDataに依存します。
     search() { this.renderSearch() },
     searchData() { return {} },
-    searchAction(param, success, failure) {
-      Lib.Log.error('利用先でメソッドを実装してください [searchAction]')
+    action(param, success, failure) {
+      Lib.Log.error('利用先でメソッドを実装してください [action]')
     },
     // 次ページの検索を行います。
     // 検索結果は一覧にそのまま追加されます。
@@ -90,7 +90,7 @@ export default {
         this.updating = false
         this.apiFailure(error)
       }
-      this.searchAction(param, success, failure)
+      this.action(param, success, failure)
     },
     // 検索結果をitemsへ格納します。
     // itemsがv-for等で画面要素と紐づいていた時は画面側にも内容が反映されます。
