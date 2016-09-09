@@ -1,8 +1,6 @@
 sample-ui-vue-flux
 ---
 
-> 作成中です、、
-
 ### はじめに
 
 [BootStrap](http://getbootstrap.com/) / [Vue.js](http://jp.vuejs.org/) を元にしたプロジェクト Web リソース ( HTML / CSS / JS ) です。 [Vuex](https://github.com/vuejs/vuex) を用いた Flux 風のモデルを前提としています。  
@@ -73,7 +71,7 @@ sample-ui-vue-flux
 - プロジェクト固有の JS は Webpack を利用して生成する
     - グローバルスコープの汚染を許容せずにコンポーネントベースで開発する
 - Vue.js の実装アプローチは [vue-hackernews-2.0](https://github.com/vuejs/vue-hackernews-2.0) を参考に
-- Flux 関連は Vuex の[リファレンス](http://vuex.vuejs.org/ja/index.html) 記載事項をなるべく尊重
+- Flux 関連は [Vuex のリファレンス](http://vuex.vuejs.org/ja/index.html) ベースでなるべく尊重
     - Actions の管理がどうしても煩雑に思えたので Vue.js の Mixin を利用して同概念を代用
     - Store の管理対象はコンポーネント間で横断的に利用される情報のみとし、全てをその管理下にはおかない
         - 入力情報やトランザクション系の揮発性高い参照情報とかは入れない
