@@ -38,10 +38,8 @@ export default {
     this.clear()
   },
   methods: {
-    // 登録/変更処理を行います。
-    // 実行時の接続URLは前述のattributes解説を参照。実際の呼び出しはregisterPath/updatePathの値を利用。
+    // 各種登録処理を行います。
     // 登録情報はregisterDataに依存します。
-    // 登録成功時の後処理はactionSuccessAfter、失敗時の後処理はactionFailureAfterを実装する事で差し込み可能です。
     register(event) {
       let param = this.registerData()
       if (0 < Object.keys(param).length) Lib.Log.debug(param)
