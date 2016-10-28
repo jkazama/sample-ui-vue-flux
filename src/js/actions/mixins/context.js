@@ -8,7 +8,8 @@ export default {
     // メッセージを通知します。
     message(globalMessage = null, columns = [], level = Level.INFO) {
       if (globalMessage) Lib.Log.debug(globalMessage)
-      this.$store.commit(types.UPDATE_MESSAGE_GLOBAL, {message: globalMessage, level: level})
+      this.$store.commit(types.UPDATE_MESSAGE_GLOBAL,
+        {message: globalMessage, messageKey: this.componentTag(), level: level})
       this.$store.commit(types.UPDATE_MESSAGE_COLUMNS, columns)
     },
     // エラーメッセージを通知します。

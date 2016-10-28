@@ -44,7 +44,7 @@ export default {
       let param = this.registerData()
       if (0 < Object.keys(param).length) Lib.Log.debug(param)
       this.updating = true
-      let success = (v, message) => {
+      let success = (v, message = "処理を完了しました") => {
         this.updating = false
         this.actionSuccess(v, message)
       }

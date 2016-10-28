@@ -6,6 +6,8 @@ import Vue from "vue"
 import Message from "components/Message.vue"
 import CommandButton from "components/CommandButton.vue"
 import InputText from "components/InputText.vue"
+import SelectBox from "components/SelectBox.vue"
+import DatePicker from "components/DatePicker.vue"
 import ListGroup from "components/ListGroup.vue"
 import Modal from "components/Modal.vue"
 
@@ -31,12 +33,17 @@ export default {
   },
   mixins: [ActionsContext],
   components: {
-    Message, CommandButton, InputText, ListGroup, Modal
+    Message, CommandButton, InputText, SelectBox, DatePicker, ListGroup, Modal
   },
   created() {
     this.clear()
   },
   methods: {
+    // コンポーネントタグ(テンプレートで定義された文字列)を返します。文字列はアッパーキャメルケースで統一して返されます。
+    componentTag() {
+      let tag = this.$options._componentTag
+      return tag ? _.upperFirst(_.camelCase(tag)) : ""
+    },
     // グローバルエラー及び/コントロールエラーを初期化します
     clear() {
       this.clearMessage()
