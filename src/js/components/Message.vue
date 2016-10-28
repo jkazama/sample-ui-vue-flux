@@ -5,6 +5,7 @@
 
 [template]
 Message(global=true)
+Message(global=true, globalKey=anyEventKey)
 Message(field=anyMessageKey)
   <input type="text" …
 -->
@@ -40,13 +41,15 @@ export default {
   data() {
     return {
       classAlert: null,
-      classText: null
+      classText: null,
     }
   },
   props: {
-    // グローバルレイアウト表示フラグ
+    // グローバル例外表示フラグ
     global: {type: Boolean, default: false},
-    // フィールド表示キー (グローバル例外表示フラグが false 時に有効)
+    // グローバル例外識別キー
+    globalKey: {type: String, default: null},
+    // フィールド例外表示キー (グローバル例外表示フラグが false 時に有効)
     field: {type: String}
   },
   computed: {
@@ -60,7 +63,10 @@ export default {
   },
   methods: {
     globalMessage(msg) {
-      if (msg) {
+      var message = msg.message
+      message = Array.isArray(message) ? message[0] : message
+      let valid = this.globalKey ? this.globalKey === msg.messageKey : true
+      if (message && valid) {
         let type = this.messageType(msg.level)
         this.classAlert = `alert-${type}`
         this.classText = `text-${type}`
@@ -68,7 +74,16 @@ export default {
         this.classAlert = null
         this.classText = null
       }
-      return msg ? msg.message : null
+      return message ? message : null
+    },
+    columnMessage(columns) {
+      if (columns && 0 < columns.length) {
+        let column = Array.from(columns).find((v) => v.key === this.field)
+        let type = this.messageType(column.level)
+        this.classText = `text-${type}`
+        return column ? column.messages[0] : null
+      }
+      return null
     },
     messageType(level) {
       switch (level) {
@@ -80,17 +95,6 @@ export default {
           return "danger"
         default:
           return "default"
-      }
-    },
-    columnMessage(columns) {
-      if (columns && 0 < columns.length) {
-        let column = Array.from(columns).find((v) => v.key === this.field)
-        let type = this.messageType(column.level)
-        this.classText = `text-${type}`
-        return column ? column.messages[0] : null
-      } else {
-        this.classText = null
-        return null
       }
     }
   }
