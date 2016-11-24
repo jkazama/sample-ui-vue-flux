@@ -70,11 +70,12 @@ export default {
         let type = this.messageType(msg.level)
         this.classAlert = `alert-${type}`
         this.classText = `text-${type}`
+        return message
       } else {
         this.classAlert = null
         this.classText = null
+        return null
       }
-      return message ? message : null
     },
     columnMessage(columns) {
       if (columns && 0 < columns.length) {
