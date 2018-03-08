@@ -1,21 +1,21 @@
 const root = {
-  src:   `${__dirname}/src`,
-  dist:  `${__dirname}/dist`,
-  tmp:   `${__dirname}/tmp`
+  src: `${__dirname}/src`,
+  dist: `${__dirname}/dist`,
+  tmp: `${__dirname}/tmp`
 }
 
 const paths = {
   src: {
     root: `${root.src}`,
     html: `${root.src}/html`,
-    js:   `${root.src}/js`,
-    css:  `${root.src}/css`,
+    js: `${root.src}/js`,
+    css: `${root.src}/css`,
     static: `${root.src}/static`
   },
   dist: {
     root: `${root.dist}`,
-    js:   `${root.dist}/js`,
-    css:  `${root.dist}/css`,
+    js: `${root.dist}/js`,
+    css: `${root.dist}/css`,
     font: `${root.dist}/fonts`
   },
   node: {
@@ -27,9 +27,9 @@ const resource = {
     pug: `${paths.src.html}/**/*.pug`,
     webpack: {
       babel: `${paths.src.js}/**/*.js`,
-      vue:   `${paths.src.js}/**/*.vue`
+      vue: `${paths.src.js}/**/*.vue`
     },
-    sass:   `${paths.src.css}/**/*.s+(a|c)ss`,
+    sass: `${paths.src.css}/**/*.s+(a|c)ss`,
     static: `${paths.src.static}/**/*`
   },
   vendor: {
@@ -50,7 +50,7 @@ import browserSyncTool from 'browser-sync'
 import RevAll from 'gulp-rev-all'
 
 const $ = gulpLoaderPlugins()
-const browserSync   = browserSyncTool.create()
+const browserSync = browserSyncTool.create()
 
 let production = false
 
@@ -63,7 +63,7 @@ gulp.task('build', (callback) =>
 )
 
 //## build production
-gulp.task('build-prod', (callback) => 
+gulp.task('build-prod', (callback) =>
   runSequence('production', 'build', 'revision', callback)
 )
 
@@ -73,7 +73,7 @@ gulp.task('clean', () =>
 )
 
 // production option
-gulp.task('production', () => production = true )
+gulp.task('production', () => production = true)
 
 // support Resource Revision
 gulp.task('revision', (callback) =>
@@ -84,11 +84,14 @@ gulp.task('revision', (callback) =>
 gulp.task('build:webpack', () => {
   process.env.NODE_ENV = (production == true) ? 'production' : 'development'
   let plugins = [
-    new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "vendor.bundle.js"}),
-    new webpack.ProvidePlugin({jQuery: "jquery", $: "jquery"}),
-    new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)})
+    new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendor.bundle.js" }),
+    new webpack.ProvidePlugin({ jQuery: "jquery", $: "jquery" }),
+    new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) })
   ]
-  if (production) plugins.push(new webpack.optimize.UglifyJsPlugin({compress: { warnings: false　}}))
+  if (production) {
+    plugins.push(new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false 　} }))
+    plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
+  }
   return gulp.src([resource.src.webpack.babel, resource.src.webpack.vue])
     .pipe($.plumber())
     .pipe(webpackStream({
@@ -97,12 +100,12 @@ gulp.task('build:webpack', () => {
         app: `${paths.src.js}/app.js`,
         vendor: resource.vendor.js
       },
-      output: {filename: 'bundle.js'},
+      output: { filename: 'bundle.js' },
       watch: !production,
       module: {
         rules: [
-          {test: /\.js$/, use: 'babel-loader', exclude: /node_modules/},
-          {test: /\.vue$/, use: 'vue-loader', exclude: /node_modules/}
+          { test: /\.js$/, use: 'babel-loader', exclude: /node_modules/ },
+          { test: /\.vue$/, use: 'vue-loader', exclude: /node_modules/ }
         ],
       },
       resolve: {
@@ -114,7 +117,7 @@ gulp.task('build:webpack', () => {
         }
       },
       plugins: plugins
-     }, webpack))
+    }, webpack))
     .pipe(gulp.dest(paths.dist.js))
     .pipe(browserSync.stream())
 })
@@ -127,7 +130,7 @@ gulp.task('build:pug', () => {
     .pipe($.htmlhint())
     .pipe($.htmlhint.reporter())
     .pipe(gulp.dest(paths.dist.root))
-    .pipe(browserSync.stream())  
+    .pipe(browserSync.stream())
 })
 
 // compile Sass -> CSS
@@ -156,12 +159,12 @@ gulp.task('build:static', () => {
 // run Development Web Server (BrowserSync) [localhost:3000]
 gulp.task('server', () => {
   browserSync.init({
-    server: {baseDir: paths.dist.root},
+    server: { baseDir: paths.dist.root },
     notify: false
   })
   // watch for source
-  gulp.watch(resource.src.pug,    ['build:pug'])
-  gulp.watch(resource.src.sass,   ['build:sass'])
+  gulp.watch(resource.src.pug, ['build:pug'])
+  gulp.watch(resource.src.sass, ['build:sass'])
   gulp.watch(resource.src.static, ['build:static'])
 })
 
@@ -172,7 +175,7 @@ gulp.task('revision:clean', () =>
 
 gulp.task('revision:append', () => {
   return gulp.src(`${paths.dist.root}/**/*`)
-    .pipe(RevAll.revision({dontRenameFile: [/^\/favicon.ico$/g, '.html']}))
+    .pipe(RevAll.revision({ dontRenameFile: [/^\/favicon.ico$/g, '.html'] }))
     .pipe(gulp.dest(root.tmp))
 })
 
