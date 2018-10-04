@@ -3,6 +3,9 @@
  SPA Entry File
 ----------------------------------*/
 
+// Bootstrap JS
+import "bootstrap"
+
 // Vue / Vue Routing
 import Vue from 'vue'
 import store from './store'
