@@ -1,7 +1,7 @@
 <!-- 
 - Message.vue -
 エラーメッセージ表示機能を提供する Vue コンポーネント。
-グローバルイベント(Event.Messages)で通知された内容を表示します。
+グローバルイベントで通知された内容を表示します。
 
 [template]
 Message(global=true)
@@ -10,6 +10,12 @@ Message(field=anyMessageKey)
   <input type="text" …
 -->
 <style lang="scss">
+.l-message-global {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1;
+}
 .l-message-group {
   display: block;
   input, textarea, select {
@@ -22,12 +28,22 @@ Message(field=anyMessageKey)
     margin-bottom: .2em;
   }
 }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 </style>
 
 <template lang="pug">
 div
-  div(v-if="global")
-    .alert(:class="[classAlert, classText]" v-text="message" v-if="message")
+  div(v-if="global && message")
+    transition(v-if="notification", name="fade")
+      .l-message-global
+        .alert.p-2(:class="[classAlert, classText]")
+          i.fas.fa-exclamation-triangle
+          | &nbsp;{{message}}
   div(v-if="!global")
     div(:class="{'input-group': message, 'l-message-group': message}")
       slot
@@ -42,6 +58,7 @@ export default {
     return {
       classAlert: null,
       classText: null,
+      notification: false,
     }
   },
   props: {
@@ -50,7 +67,9 @@ export default {
     // グローバル例外識別キー
     globalKey: {type: String, default: null},
     // フィールド例外表示キー (グローバル例外表示フラグが false 時に有効)
-    field: {type: String}
+    field: {type: String},
+    // グローバル例外表示期間（msec）
+    showTime: {type: Number, default: 2000},
   },
   computed: {
     message() {
@@ -63,13 +82,16 @@ export default {
   },
   methods: {
     globalMessage(msg) {
+      this.notification = false
       var message = msg.message
       message = Array.isArray(message) ? message[0] : message
       let valid = this.globalKey ? this.globalKey === msg.messageKey : true
       if (message && valid) {
         let type = this.messageType(msg.level)
         this.classAlert = `alert-${type}`
-        this.classText = `text-${type}`
+        this.classText = null
+        this.notification = true
+        setTimeout(() => this.notification = false, this.showTime)
         return message
       } else {
         this.classAlert = null
